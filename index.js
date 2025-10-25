@@ -14,7 +14,13 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 dotenv.config();
 const app = express();
 
-app.use(cors());
+// app.use(cors(
+//   origin ["http://localhost:5173", "https://olx-frontend-code.vercel.app"]
+// ));
+app.use(cors({
+  origin : ["http://localhost:5173", "https://olx-frontend-code.vercel.app"],
+  credentials : true
+}))
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
