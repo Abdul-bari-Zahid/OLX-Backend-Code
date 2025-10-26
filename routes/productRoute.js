@@ -41,19 +41,65 @@ router.post("/user/product", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Get all public (unblocked) products
+//  Get all public (unblocked) products with optional pagination & category
+// Query params:
+// - page (1-based)
+// - limit (items per page)
+// - category (category slug or name)
 router.get("/user/products", async (req, res) => {
   try {
-    const products = await Products.find({ blocked: { $ne: true } })
-      .sort({ createdAt: -1 })
-      .toArray();
-    res.json(products);
+    const page = Math.max(1, parseInt(req.query.page || '1'));
+    const limit = Math.max(1, parseInt(req.query.limit || '0')) || 0; // 0 means no limit
+    const category = req.query.category;
+
+    const filter = { blocked: { $ne: true } };
+    if (category) {
+      // category may be sent as slug (kebab-case) or plain name; match case-insensitive
+      const normalized = category.replace(/-/g, ' ');
+      filter.category = { $regex: `^${normalized}$`, $options: 'i' };
+    }
+
+    const total = await Products.countDocuments(filter);
+
+    let cursor = Products.find(filter).sort({ createdAt: -1 });
+    if (limit > 0) {
+      const skip = (page - 1) * limit;
+      cursor = cursor.skip(skip).limit(limit);
+    }
+
+    const products = await cursor.toArray();
+
+    const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
+
+    res.json({ products, total, page, totalPages });
   } catch (err) {
     res.status(500).json({ message: "Error fetching products", error: err.message });
   }
 });
 
-// ✅ Get specific product (public)
+
+
+
+router.get("/products/:id", async (req, res) => {
+  try {
+    const { ObjectId } = await import("mongodb");
+    const id = new ObjectId(req.params.id);
+
+    const product = await Products.findOne({ _id: id });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json(product);
+  } catch (err) {
+    console.error("Error fetching product:", err);
+    res.status(500).json({ message: "Error fetching product" });
+  }
+});
+
+
+
+//  Get specific product (public)
 router.get("/pb/user/product/:id", async (req, res) => {
   try {
     const id = new ObjectId(req.params.id);

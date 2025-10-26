@@ -15,6 +15,7 @@ router.get("/admin/users", authMiddleware, isAdminMiddleware, async (req, res) =
     const users = await Users.find({}, { projection: { password: 0 } })
       .sort({ createdAt: -1 })
       .toArray();
+      console.log(users);
     return res.json(users);
   } catch (err) {
     return res

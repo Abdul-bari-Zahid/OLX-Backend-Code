@@ -31,7 +31,8 @@ router.post("/user/product", authMiddleware, upload.single("image"), async (req,
       title: req.body.title,
       description: req.body.description,
       price: Number(req.body.price),
-      image: req.file ? `/uploads/${req.file.filename}` : null,
+      // image: req.file ? `/uploads/${req.file.filename}` : null,
+      image: (req.files || []).map(f => `uploads/${f.filename}`),  // missing leading slash
       createdAt: new Date(),
       userId: normalizeUserId(providedUserId) // store as string for consistent queries
     };
