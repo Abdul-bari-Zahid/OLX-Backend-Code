@@ -28,8 +28,8 @@ const io = new Server(httpServer, {
       "http://localhost:3000",
       "http://localhost:5174",
       "http://localhost:5175",
-      "https://olx-frontend-code.vercel.app/",
-      "https://olx-admin-code.vercel.app/login"
+      "https://olx-frontend-code.vercel.app",
+      "https://olx-admin-code.vercel.app"
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -67,8 +67,8 @@ app.use(cors({
     "http://localhost:3000",
     "http://localhost:5174",
     "http://localhost:5175",
-    "https://olx-frontend-code.vercel.app/",
-    "https://olx-admin-code.vercel.app/login"
+    "https://olx-frontend-code.vercel.app",
+    "https://olx-admin-code.vercel.app"
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
